@@ -1,19 +1,27 @@
 <template>
-  <image-list />
-  <image-view />
+  <the-header/>
+
+  <div class="main-layout">
+    <images-list />
+    <image-view />
+  </div>
 </template>
 
 <script>
-import ImageList from '../components/ImageList.vue'
+import TheHeader from '../components/TheHeader.vue'
+import ImagesList from '../components/ImagesList.vue'
 import ImageView from '../components/ImageView.vue'
 
 export default {
   name: 'MainView',
 
-  components: { ImageList, ImageView }
+  components: { TheHeader, ImagesList, ImageView }
 }
 </script>
 
-<style>
-
+<style scoped>
+.main-layout {
+  display: flex;
+  flex-grow: 1;
+}
 </style>
