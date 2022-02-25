@@ -1,0 +1,50 @@
+.btn {
+  border: none;
+  cursor: pointer;
+  background: none;
+  font-size: 16px;
+  line-height: 150%;
+  text-transform: uppercase;
+
+  &:active {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__square {
+    background: $blue;
+    color: #fff;
+    padding: 8px 30px 8px 16px;
+    display: flex;
+    align-items: center;
+
+    img {
+      margin-left: 15px;
+    }
+
+    &--icon {
+      padding-right: 10px;
+    }
+
+  }
+
+  &__link {
+    color: $blue;
+  }
+
+  &__error {
+    font-size: 16px;
+    color: $blue;
+    text-transform: uppercase;
+  }
+
+  &__circle {
+    position: relative;
+
+    img:last-child {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+  }
+}

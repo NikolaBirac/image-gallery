@@ -2,93 +2,198 @@
   <div class="comments">
     <div v-if="isOpen" class="comments__popup">
       <div class="comments__header">
-        <img src="../assets/arrow-left.svg" alt="">
-        <span class="comments__title">Image name</span>
+        <img
+          src="../assets/arrow-left.svg"
+          @click="closeModal"
+          style="cursor: pointer"
+        />
+        <span class="comments__title">{{ selectedImage.title }}</span>
       </div>
-      <div class="comments__content">
+
+      <loading v-if="isLoading" />
+
+      <div v-else class="comments__container" ref="commentsArea">
         <div class="comments__img">
-          <img src="../assets/circle.jpg" alt="">
+          <img :src="selectedImage.coverUrl" />
         </div>
 
-        <comment-item
-          v-for="(comment, index) of comments"
-          :key="index"
-          :comment="comment"
-          @openDialog="setDeleteMode"
-          @onEdit="onEdit"/>
-  
-      </div>
-      <div class="comments__create">
-        <textarea
-          ref="commentRef"
-          v-model="comment"
-          rows="1"
-          placeholder="LEAVE COMMENT"
-          class="comments__input" />
-        <button class="btn comments__input-icon">
-          <img src="../assets/send.svg" alt="send">
-        </button>
+        <div class="comments__content">
+          <!-- Error message -->
+          <error v-if="isError" @refresh="loadComments"> Load comments </error>
+
+          <!-- Comments -->
+          <comment-item
+            v-else
+            v-for="(comment, index) of comments"
+            :key="index"
+            :comment="comment"
+            @onEdit="onEdit"
+          />
+        </div>
       </div>
 
-      <delete-comment-popup
-        v-if="isDeleteMode"
-        isDeleteMode="isDeleteMode"
-        @closeDeleteMode="setDeleteMode"
+      <!-- Leave comment -->
+      <div class="comments__create">
+        <textarea
+          @keydown.enter.prevent="sendComment"
+          @input="resize"
+          ref="textareaRef"
+          v-model.trim="text"
+          placeholder="LEAVE COMMENT"
+          class="comments__textarea"
+        />
+        <div class="comments__textarea--hidden" ref="hiddenElement"></div>
+        <button class="btn comments__textarea-icon" @click="sendComment">
+          <img src="../assets/send.svg" />
+        </button>
+      </div>
+      <!-- Delete comment -->
+      <delete-comment
+        v-if="deleteCommentId"
       />
     </div>
 
     <button class="btn btn__circle comments__floating" @click="closeModal">
-      <img src="../assets/ellipse-yellow.svg" alt="">
-      <img v-if="isOpen" src="../assets/close.svg" alt="" class="comments__floating-icon">
-      <img v-else src="../assets/comment.svg" alt="" class="comments__floating-icon">
-      <!-- <img else src="../assets/comment-part.svg" alt="" class="comments__floating--close"> -->
+      <img src="../assets/ellipse-yellow.svg" />
+      <img
+        v-if="isOpen"
+        src="../assets/close.svg"
+        class="comments__floating-icon"
+      />
+      <img v-else src="../assets/comment.svg" class="comments__floating-icon" />
+      <!-- <img else src="../assets/comment-part.svg" class="comments__floating--close"> -->
     </button>
   </div>
-
 </template>
 
 <script>
-import { ref } from '@vue/reactivity'
-import CommentItem from './CommentItem.vue'
-import DeleteCommentPopup from './DeleteCommentPopup.vue'
+import { mapActions, mapGetters } from "vuex";
+import CommentItem from "./CommentItem";
+import DeleteComment from "./DeleteComment";
+import Error from "./common/TheError";
+import Loading from "./common/TheLoading";
+import { timestamp } from "../firebase/config";
 
 export default {
-  name: 'CommentsPopup',
+  name: "CommentsPopup",
 
-  components: { CommentItem, DeleteCommentPopup },
+  components: { CommentItem, DeleteComment, Error, Loading },
 
-  setup () {
-    const isOpen = ref(true)
-    const isDeleteMode = ref(false)
-    const comment = ref('')
-    const commentRef = ref(null)
+  data() {
+    return {
+      isOpen: false,
+      isDeleteMode: false,
+      isError: false,
+      isLoading: false,
+      isEditMode: false,
+      editComment: null,
+      text: "",
+    };
+  },
 
-    const comments = ref([
-      { id: 10, userId: 1, text: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos reprehenderit facilis soluta eveniet culp' },
-      { id: 11, userId: 2, text: 'Lorem ipsum, dolor sit amet consectetur adipisicing elit' },
-      { id: 12, userId: 3, text: 'Lorem ipsum, dolor sit amet consectetur' },
-      { id: 13, userId: 3, text: 'Lorem ipsum, dolor sit amet consectetur' },
-      { id: 14, userId: 3, text: 'Lorem ipsum, dolor sit amet consectetur' }
-    ])
+  computed: {
+    ...mapGetters(["comments", "selectedId", "selectedImage", 'deleteCommentId']),
+  },
 
-    const setDeleteMode = value => {
-      isDeleteMode.value = value
-    }
+  methods: {
+    ...mapActions([
+      "sendComment",
+      "getComments",
+      "addComment",
+      "set",
+      "updateComment",
+    ]),
 
-    const onEdit = id => {
-      comment.value = comments.value.find( item  => item.id === id).text
-      commentRef.value.focus()
-    }
+    resize () {
+      const hidden = this.$refs.hiddenElement
+      hidden.innerHTML = this.text
 
-    const closeModal = () => {
-      isOpen.value = !isOpen.value
+      this.$refs.textareaRef.style.height = `${hidden.clientHeight}px`
+    },
 
-      // Reset comment
-      comment.value = ''
-    }
+    async sendComment() {
+      if (this.text) {
+        if (this.isEditMode) {
+          const comment = { ...this.editComment, text: this.text }
 
-    return { isOpen, comments, isDeleteMode, comment, commentRef, closeModal, setDeleteMode, onEdit }
-  }
+          // Update comment
+          try {
+            await this.updateComment(comment)
+          } catch (error) {
+            this.isError = true
+          }
+        } else {
+          const comment = {
+            text: this.text,
+            userId: 1,
+            userName: "Nikola",
+            createdAt: timestamp(),
+            imageId: this.selectedId,
+          }
+
+          // Add comment
+          try {
+            await this.addComment({ state: "comments", data: comment })
+          } catch (error) {
+            this.isError = true
+          }
+        }
+        this.scrollBottom()
+
+        // Reset text
+        this.text = ""
+      }
+    },
+
+    scrollBottom() {
+      const el = this.$refs.commentsArea
+      el.scrollTop = el.scrollHeight
+    },
+
+    onEdit(comment) {
+      this.text = comment.text
+      this.isEditMode = true
+      this.editComment = comment
+
+      this.$refs.textareaRef.focus()
+    },
+
+    async loadComments() {
+      this.isError = false
+      this.isLoading = true
+
+      try {
+        await this.getComments()
+      } catch (error) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    closeModal() {
+      this.isOpen = !this.isOpen
+
+      // Reset text
+      this.text = ""
+    },
+  },
+
+  watch: {
+    isOpen(n) {
+      if (n) {
+        this.loadComments()
+      } else {
+        this.set({ state: "comments", data: [] })
+      }
+    },
+
+    selectedId(n) {
+      if (n) {
+        this.isOpen = false
+      }
+    },
+  },
 }
 </script>
 
@@ -105,18 +210,10 @@ export default {
     position: relative;
     filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.25));
     border-radius: 150px;
-
-    // &-icon {
-    //   position: absolute;
-    //   top: 50%;
-    //   left: 50%;
-    //   transform: translate(-50%, -50%);
-    // }
   }
 
   &__popup {
     background-color: #fff;
-    // max-height: 70%;
     width: 375px;
     border-radius: 5px;
     overflow: hidden;
@@ -135,16 +232,21 @@ export default {
     font-weight: 700;
   }
 
-  &__content {
+  &__container {
     padding: 18px 20px;
     max-height: 500px;
+    min-height: 250px;
     overflow: scroll;
     overflow-x: hidden;
 
     &::-webkit-scrollbar {
-      width: 0;  /* Remove scrollbar space */
-      background: transparent;  /* Make scrollbar invisible */
+      width: 0; /* Remove scrollbar space */
+      background: transparent; /* Make scrollbar invisible */
     }
+  }
+
+  &__content {
+    margin-top: 10px;
   }
 
   &__img {
@@ -158,30 +260,43 @@ export default {
   }
 
   &__create {
-    border-top: 1px solid #ABAFAE;
+    border-top: 1px solid #abafae;
     position: relative;
   }
-  
-  &__input {
-      width: 100%;
-      padding: 17px 70px 12px 30px;
-      border: none;
-      font-size: 18px;
-      resize: none;
-      overflow: hidden;
 
-      &::placeholder {
-        color: #000;
-        font-weight: 500;
-      }
-    
-      &-icon {
-        position: absolute;
-        right: 30px;
-        top: 50%;
-        transform: translateY(-50%);
-      }
+  &__textarea {
+    min-height: 60px;
+    height: 60px;
+    width: 100%;
+    padding: 17px 70px 12px 30px;
+    border: none;
+    font-size: 18px;
+    line-height: 1.5;
+    max-height: 135px;
+    resize: none;
+    overflow-y: scroll;
+    word-wrap: break-word;
+
+    &::placeholder {
+      color: #000;
+      font-weight: 500;
     }
 
+    &-icon {
+      position: absolute;
+      right: 30px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    &--hidden {
+      position: fixed;
+      visibility: hidden;
+      pointer-events: none;
+      width: 375px;
+      padding: 17px 70px 12px 30px;
+      word-wrap: break-word;
+    }
+  }
 }
 </style>

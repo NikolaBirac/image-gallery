@@ -5,24 +5,23 @@
   
       <div>
         <button class="btn delete__btn" @click="closeDeleteMode">Cancel</button>
-        <button class="btn delete__btn">Delete</button>
+        <button class="btn delete__btn" @click="deleteComment">Delete</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 export default {
-  name: 'DeleteCommentPopup',
+  name: 'DeleteComment',
 
-  emits: ['closeDeleteMode'],
+  methods: {
+    ...mapActions(['deleteComment', 'set']),
 
-  setup(props, context) {
-    const closeDeleteMode = () => {
-      context.emit("closeDeleteMode", false)
+    closeDeleteMode () {
+      this.set({ state: 'deleteCommentId', data: null })
     }
-
-    return { closeDeleteMode }
   }
 }
 </script>

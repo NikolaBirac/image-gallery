@@ -1,13 +1,31 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import MainView from '../views/MainView.vue'
-// import LoginView from '../views/LoginView.vue'
+import MainLayout from '../layout/MainLayout'
+import UploadView from '../views/UploadView'
+import HomeView from '../views/HomeView'
+import LoginView from '../views/LoginView'
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: MainView
-  }
+    component: MainLayout,
+    children: [
+      {
+        path: '/home',
+        name: 'home',
+        component: HomeView
+      },
+      {
+        path: '/upload',
+        name: 'upload',
+        component: UploadView
+      },
+    ]
+  },
+  {
+    path: '/login',
+    name: 'login',
+    component: LoginView
+  },
   // {
   //   path: '/about',
   //   name: 'about',

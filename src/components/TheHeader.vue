@@ -1,6 +1,9 @@
 <template>
   <header>
-    <img src="../assets/logo.svg" alt="logo">
+    <router-link :to="'/home'">
+      <img src="../assets/logo.svg" alt="logo">
+    </router-link>
+    
     <div class="header-wrapper">
       <div class="header-wrapper__user">
         <img src="../assets/ellipse.svg" alt="ellipse" class="header-wrapper__icon-ellipse">
@@ -20,6 +23,7 @@ export default {
 
 <style lang="scss" scoped>
 header {
+  min-height: 84px;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -9,11 +9,11 @@
   margin: 0;
   padding: 0;
   font-family: 'Roboto', sans-serif;
+  font-size: 18px;
   box-sizing: border-box;
 }
 
 body {
-  overflow: hidden;
   position: relative;
 }
 
@@ -37,45 +37,12 @@ h1 {
   font-weight: 700;
 }
 
-.btn {
-  border: none;
-  cursor: pointer;
-  background: none;
-
-  &:active {
-    -webkit-tap-highlight-color: transparent;
-  }
-
-  &__square {
-    background: #277a7f;
-    color: #fff;
-    padding: 8px 30px 8px 16px;
-    display: flex;
-    align-items: center;
-    font-size: 16px;
-    line-height: 150%;
-    text-transform: uppercase;
-
-    img {
-      margin-left: 15px;
-    }
-
-    &--icon {
-      padding-right: 10px;
-    }
-  }
-
-  &__circle {
-    position: relative;
-
-    img:last-child {
-      position: absolute;
-      top: 48%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
-  }
-
+a {
+  text-decoration: none;
+  color: inherit;
 }
 
+img{
+  vertical-align: middle;
+}
 </style>

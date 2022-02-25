@@ -1,27 +1,24 @@
 <template>
-  <the-header/>
-
   <div class="main-layout">
     <images-list />
-    <image-view />
+    <image-details />
   </div>
 </template>
 
 <script>
-import TheHeader from '../components/TheHeader.vue'
 import ImagesList from '../components/ImagesList.vue'
-import ImageView from '../components/ImageView.vue'
+import ImageDetails from '../components/ImageDetails.vue'
 
 export default {
-  name: 'MainView',
+  name: 'HomeView',
 
-  components: { TheHeader, ImagesList, ImageView }
+  components: { ImagesList, ImageDetails }
 }
 </script>
 
 <style scoped>
 .main-layout {
+  overflow: hidden;
   display: flex;
-  flex-grow: 1;
 }
 </style>

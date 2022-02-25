@@ -3,7 +3,7 @@
     <div class="login__label"></div>
 
     <div class="login__form">
-      <form>
+      <form @submit.prevent="onSubmit">
         <h1>Log in</h1>
         <div>
           <label for="email" class="login__input-label">Email address</label>
@@ -26,13 +26,19 @@
 
 <script>
 export default {
+  methods: {
+    onSubmit () {
+      console.log('login')
+    }
+  }
 
 }
 </script>
 
 <style lang="scss" scoped>
 .login {
-  width: 700px;
+  width: 100%;
+  max-width: 700px;
   height: 100%;
   // background: red;
   padding-top: 60px;
@@ -47,7 +53,8 @@ export default {
     display: flex;
     justify-content: end;
     align-items: center;
-    padding-right: 20px;
+    min-height: calc(100vh - 170px);
+    padding: 50px 20px;
   }
 
   &__input {
@@ -57,6 +64,10 @@ export default {
     font-size: 18px;
     padding: 0 10px;
     border: 1px solid #A0AEC0;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   
     &-label {
       font-size: 18px;

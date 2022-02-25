@@ -12,12 +12,12 @@
 
       <div v-if="isUserComment" class="comment__edit">
         <button class="btn btn__circle" @click="onEdit">
-          <img src="../assets/ellipse-yellow-small.svg" alt="">
-          <img src="../assets/edit.svg" alt="">
+          <img src="../assets/ellipse-yellow-small.svg">
+          <img src="../assets/edit.svg">
         </button>
-        <button class="btn btn__circle" @click="openDialog">
-          <img src="../assets/ellipse-yellow-small.svg" alt="">
-          <img src="../assets/delete.svg" alt="">
+        <button class="btn btn__circle" @click="onDelete">
+          <img src="../assets/ellipse-yellow-small.svg">
+          <img src="../assets/delete.svg">
         </button>
       </div>
     </div>
@@ -25,8 +25,7 @@
 </template>
 
 <script>
-import { ref } from '@vue/reactivity'
-import { computed } from '@vue/runtime-core'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'CommentItem',
@@ -38,24 +37,27 @@ export default {
     }
   },
 
-  emits: ['openDialog', 'onEdit'],
-
-  setup (props, context) {
-    const userId = ref(2)
-
-    const isUserComment = computed(() => {
-      return props.comment.userId === userId.value
-    })
-
-    const openDialog = () => {
-      context.emit("openDialog", true)
+  data () {
+    return {
+      userId: 1
     }
+  },
 
-    const onEdit = () => {
-      context.emit("onEdit", props.comment.id)
+  methods: {
+    ...mapActions(['set']),
+
+    isUserComment () {
+      return this.comment.userId === this.userId
+    },
+
+    onDelete () {
+      this.set({ state: 'deleteCommentId', data: this.comment.id })
+      // this.$emit("onDelete", this.comment)
+    },
+
+    onEdit () {
+      this.$emit("onEdit", this.comment)
     }
-
-    return { userId, isUserComment, openDialog, onEdit }
   }
 }
 </script>

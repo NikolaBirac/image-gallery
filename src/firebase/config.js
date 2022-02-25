@@ -1,19 +1,22 @@
-import { initializeApp } from 'firebase/app'
-import { getFirestore } from 'firebase/firestore'
+import firebase from "firebase/app";
+import 'firebase/storage'
+import 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAOLoF_bDknv2PiKTADglHRY2uPf78wIpo",
-  authDomain: "image-gallery-5b102.firebaseapp.com",
-  projectId: "image-gallery-5b102",
-  storageBucket: "image-gallery-5b102.appspot.com",
-  messagingSenderId: "773415026658",
-  appId: "1:773415026658:web:dc8e34a8b19afbe27c03bb"
-}
+  apiKey: "AIzaSyDa6RQibKeQ6rAxgxEaSofOCVfP9-NmoIc",
+  authDomain: "gallery-8ea08.firebaseapp.com",
+  projectId: "gallery-8ea08",
+  storageBucket: "gallery-8ea08.appspot.com",
+  messagingSenderId: "105668786956",
+  appId: "1:105668786956:web:65d7d9486ddbc04b6ee729"
+};
 
 // init firebase
-initializeApp(firebaseConfig)
+firebase.initializeApp(firebaseConfig)
 
 // init services
-const db = getFirestore()
+const db = firebase.firestore()
+const projectStorage = firebase.storage()
+const timestamp = firebase.firestore.FieldValue.serverTimestamp
 
-export { db }
+export { db, projectStorage, timestamp }
