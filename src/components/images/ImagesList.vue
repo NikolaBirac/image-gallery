@@ -38,7 +38,7 @@
         </div>
         <button
           class="btn btn__square btn__square--icon"
-          @click="loadImage(img.id)"
+          @click="getImage(img.id)"
         >
           <span>Review</span>
           <img src="../../assets/arrow-right.svg" alt="arrow" />
@@ -51,13 +51,13 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import Loading from "../shared/TheLoading";
-import Error from "../shared/TheError";
-import setImageGalleryHeight from "../../shared/setImageGalleryHeight";
+import { mapActions, mapGetters } from 'vuex';
+import Loading from '../shared/TheLoading';
+import Error from '../shared/TheError';
+import { setGalleryHeight } from '../../shared/helper';
 
 export default {
-  name: "ImagesList",
+  name: 'ImagesList',
 
   components: { Loading, Error },
 
@@ -65,13 +65,13 @@ export default {
     return {
       isLoading: false,
       isError: false,
-      search: "",
+      search: '',
       images: [],
     }
   },
 
   computed: {
-    ...mapGetters(["selectedId"]),
+    ...mapGetters(['selectedId']),
 
     filteredImages() {
       return this.images.filter(({ title }) => {
@@ -81,18 +81,19 @@ export default {
   },
 
   methods: {
-    ...mapActions(["getImages", "set"]),
+    ...mapActions(['getImages', 'set']),
 
     closeMenu () {
       const gallery = document.getElementsByClassName('list')[0]
       gallery.classList.remove('active-menu')
     },
 
-    loadImage(id) {
+    getImage(id) {
       if (this.selectedId !== id) {
-        this.set({ state: "selectedId", data: id })
-        this.set({ state: "comments", data: [] })
+        this.set({ state: 'selectedId', data: id })
+        this.set({ state: 'comments', data: [] })
 
+        // Hide gallery on small devices
         this.hideGallery()
       }
     },
@@ -107,7 +108,7 @@ export default {
       this.isLoading = true
 
       try {
-        this.images = await this.getImages("images")
+        this.images = await this.getImages('images')
       } catch (err) {
         this.isError = true
       } finally {
@@ -117,7 +118,7 @@ export default {
   },
 
   mounted() {
-    setImageGalleryHeight()
+    setGalleryHeight()
   },
 
   created() {

@@ -7,8 +7,8 @@
         v-model.trim="title"
         type="text"
         placeholder="Title"
-        class="upload__input">
-      <input v-model.trim="description" type="text" placeholder="Description" class="upload__input">
+        class="upload__input"
+        maxlength="20">
       <input
         type="file"
         accept="image/*"
@@ -38,7 +38,6 @@ export default {
   data () {
     return {
       title: '',
-      description: '',
       file: null,
       isError: false,
       isLoading: false
@@ -65,7 +64,6 @@ export default {
           state: 'images',
           data: {
             title: this.title,
-            description: this.description,
             userId: user.uid,
             userName: user.email,
             coverUrl: url,

@@ -17,8 +17,11 @@
       <img
         src="../assets/arrow-down.svg"
         class="header-wrapper__icon-arrow arrow"
-        @click="onLogout"
       />
+
+      <div class="header-wrapper__logout" @click="onLogout">
+        Logout
+      </div>
     </div>
   </header>
 </template>
@@ -33,12 +36,12 @@ export default {
   data() {
     return {
       user: null,
-    };
+    }
   },
 
   computed: {
     name () {
-      return this.user.email.replace(/@.*$/, "");
+      return this.user.email.replace(/@.*$/, '')
     },
 
     isHomePage () {
@@ -47,11 +50,11 @@ export default {
   },
 
   async mounted() {
-    this.user = await projectAuth.currentUser;
+    this.user = await projectAuth.currentUser
   },
 
   methods: {
-    ...mapActions(["logout"]),
+    ...mapActions(['logout', 'set']),
 
     addActiveClass () {
       const gallery = document.getElementsByClassName('list')[0]
@@ -59,11 +62,14 @@ export default {
     },
 
     async onLogout() {
-      await this.logout();
-      this.$router.push({ name: "login" });
+      await this.logout()
+      this.$router.push({ name: 'login' })
+
+      this.set({ state: 'selectedId', data: null })
+      this.set({ state: 'selectedImage', data: {} })
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -78,6 +84,7 @@ header {
     align-items: center;
     border-radius: 50%;
     display: none;
+
     @media screen and (max-width: 991px) {
       display: block;
     }
@@ -88,6 +95,7 @@ header {
   align-items: center;
   background-color: $yellow;
   padding: 7px 65px;
+
   @media screen and (max-width: 991px) {
    padding: 7px 30px 7px 12px;
   }
@@ -97,14 +105,22 @@ header {
   display: flex;
   align-items: center;
   cursor: pointer;
+  position: relative;
+
   img.arrow {
     transition: 0.3s all ease;
   }
+
   &:hover {
     img.arrow {
       transform: rotate(180deg);
     }
+
+    & .header-wrapper__logout {
+      display: block;
+    }
   }
+
   &__user {
     position: relative;
   }
@@ -121,6 +137,21 @@ header {
     font-weight: 500;
     text-transform: uppercase;
     margin: 0 15px 0 10px;
+  }
+
+  &__logout {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: #fff;
+    border: 2px solid $yellow;
+    padding: 10px 20px;
+    display: none;
+
+    &:hover {
+      background: rgb(250, 250, 250);
+    }
   }
 
   &__icon-arrow {

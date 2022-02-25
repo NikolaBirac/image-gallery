@@ -4,7 +4,7 @@
       <div class="comments__header">
         <img
           src="../../assets/arrow-left.svg"
-          @click="closeModal"
+          @click="toggleModal"
           style="cursor: pointer"
         />
         <span class="comments__title">{{ selectedImage.title }}</span>
@@ -19,11 +19,10 @@
 
         <div class="comments__content">
           <!-- Error message -->
-          <error v-if="isError" @refresh="loadComments"> Load comments </error>
+          <error v-if="isError" @refresh="loadComments">Load comments</error>
 
           <!-- Comments -->
           <comment-item
-            v-else
             v-for="(comment, index) of comments"
             :key="index"
             :comment="comment"
@@ -54,7 +53,7 @@
       />
     </div>
 
-    <button class="btn btn__circle comments__floating" @click="closeModal">
+    <button class="btn btn__circle comments__floating" @click="toggleModal">
       <img src="../../assets/ellipse-yellow.svg" />
       <img
         v-if="isOpen"
@@ -79,10 +78,9 @@ export default {
 
   components: { CommentItem, CommentDelete, Error, Loading },
 
-  data() {
+  data () {
     return {
       isOpen: false,
-      // isDeleteMode: false,
       isError: false,
       isLoading: false,
       isEditMode: false,
@@ -112,7 +110,7 @@ export default {
       this.$refs.textareaRef.style.height = `${hidden.clientHeight}px`
     },
 
-    async sendComment() {
+    async sendComment () {
       if (this.text) {
         if (this.isEditMode) {
           const comment = { ...this.editComment, text: this.text }
@@ -147,7 +145,7 @@ export default {
       }
     },
 
-    scrollBottom() {
+    scrollBottom () {
       const el = this.$refs.commentsArea
       el.scrollTop = el.scrollHeight
     },
@@ -159,7 +157,7 @@ export default {
       this.editComment = null
     },
 
-    onEdit(comment) {
+    onEdit (comment) {
       this.text = comment.text
       this.isEditMode = true
       this.editComment = comment
@@ -167,7 +165,7 @@ export default {
       this.$refs.textareaRef.focus()
     },
 
-    async loadComments() {
+    async loadComments () {
       this.isError = false
       this.isLoading = true
 
@@ -180,25 +178,26 @@ export default {
       }
     },
 
-    closeModal() {
+    toggleModal () {
       this.isOpen = !this.isOpen
     },
   },
 
   watch: {
-    isOpen(n) {
-      if (n) {
-        this.loadComments()
-      } else {
-        this.set({ state: "comments", data: [] })
-        this.set({ state: "deleteCommentId", data: null })
+    text (n) {
+      !n && this.resize()
+    },
+
+    isOpen (n) {
+      if (!n) {
+        this.text = ''
         this.isEditMode = false
         this.editComment = null
-        this.text = ''
+        this.set({ state: "deleteCommentId", data: null })
       }
     },
 
-    selectedId(n) {
+    selectedId (n) {
       if (n) {
         this.isOpen = false
       }
@@ -310,6 +309,11 @@ export default {
     &::placeholder {
       color: #000;
       font-weight: 500;
+    }
+
+    &::-webkit-scrollbar {
+      width: 0; /* Remove scrollbar space */
+      background: transparent; /* Make scrollbar invisible */
     }
 
     &-icon {

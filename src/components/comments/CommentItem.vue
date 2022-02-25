@@ -86,6 +86,7 @@ export default {
     background: #C4C4C4;
     padding: 13px 16px 13px 21px;
     font-size: 14px;
+    word-break: break-word;
 
     &--yellow {
       background: $yellow;

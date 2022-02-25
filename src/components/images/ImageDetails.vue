@@ -7,9 +7,8 @@
       <img
         :src="selectedImage.coverUrl"
         :alt="selectedImage.title"
-        @click="changeText"
       />
-      <p class="image-main-comment">{{ text }}</p>
+      <p v-if="lastComment" class="image-main-comment">{{ lastComment }}</p>
     </div>
 
     <div v-if="!selectedId" class="image-details__empty">
@@ -28,6 +27,7 @@ import { mapActions, mapGetters } from "vuex";
 import CommentsModal from "../comments/CommentsModal";
 import Loading from "../shared/TheLoading";
 import Error from "../shared/TheError";
+import { setImageHeight } from '../../shared/helper'
 
 export default {
   name: "ImageDetails",
@@ -38,70 +38,57 @@ export default {
     return {
       isLoading: false,
       isError: false,
-      text: "",
-    };
+    }
   },
 
   computed: {
-    ...mapGetters(["selectedId", "selectedImage"]),
+    ...mapGetters(['selectedId', 'selectedImage', 'comments']),
 
-    isImageLoaded() {
-      return !!Object.keys(this.selectedImage).length;
+    isImageLoaded () {
+      return !!Object.keys(this.selectedImage).length
     },
+
+    lastComment () {
+      if (this.comments.length) {
+        return this.comments[this.comments.length - 1].text
+      }
+      return ''
+    }
   },
 
   methods: {
-    ...mapActions(["getImage", "set"]),
-
-    changeText() {
-      this.text =
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse aliquid non sint praesentium neque assumenda, beatae saepe quasi cum eos nam ex quis provident pariatur facere vero iusto? Ut, dignissimos?  hskdafkljsad kf huskadhfu hsadufh uisa dfhasduk fhkasdh fklhsadlfh  fsda fsda fsad fsda fas sad fsadf sadfsladuflhsadlfh aslkf hask";
-    },
+    ...mapActions(['getImage', 'set', 'getComments']),
 
     async loadImage() {
-      this.isError = false;
-      this.isLoading = true;
+      this.isError = false
+      this.isLoading = true
 
       // Reset selected image
-      this.set({ state: "selectedImage", data: {} });
+      this.set({ state: 'selectedImage', data: {} })
 
       try {
-        await this.getImage();
-        this.text = this.selectedImage.description;
+        await this.getImage()
+        await this.getComments()
       } catch (err) {
-        this.isError = true;
+        this.isError = true
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     },
   },
 
   updated() {
-    const container = document.getElementsByClassName("image-details")[0];
-
-    if (container) {
-      let para = container.getElementsByClassName("image-main-comment")[0];
-      if (para) {
-        let contHeight = container.clientHeight;
-        let paraHeight = para.clientHeight;
-        let viewImg = container.getElementsByTagName("img")[0];
-        let pt = window
-          .getComputedStyle(container, null)
-          .getPropertyValue("padding-top");
-        let padding = +pt.replace("px", "") * 2;
-        viewImg.style.maxHeight = contHeight - padding - paraHeight + "px";
-      }
-    }
+    setImageHeight()
   },
 
   watch: {
     async selectedId(n, o) {
       if (n !== o) {
-        await this.loadImage();
+        await this.loadImage()
       }
     },
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -113,7 +100,6 @@ export default {
   &-inner {
     img {
       width: auto;
-      vertical-align: middle;
       height: auto;
       max-width: 80%;
       max-height: 50vh;

@@ -1,5 +1,13 @@
 # image-gallery
 
+## Credentilas
+
+email: user1@test.com
+email: user2@test.com
+email: user3@test.com
+
+password: secret123
+
 ## Project setup
 ```
 yarn install
