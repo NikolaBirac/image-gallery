@@ -50,6 +50,7 @@
       <!-- Delete comment -->
       <comment-delete
         v-if="deleteCommentId"
+        @onDelete="onDelete"
       />
     </div>
 
@@ -82,7 +83,7 @@ export default {
   data() {
     return {
       isOpen: false,
-      isDeleteMode: false,
+      // isDeleteMode: false,
       isError: false,
       isLoading: false,
       isEditMode: false,
@@ -102,6 +103,7 @@ export default {
       "addComment",
       "set",
       "updateComment",
+      "deleteComment"
     ]),
 
     resize () {
@@ -141,13 +143,20 @@ export default {
         this.scrollBottom()
 
         // Reset text
-        this.text = ""
+        this.text = ''
       }
     },
 
     scrollBottom() {
       const el = this.$refs.commentsArea
       el.scrollTop = el.scrollHeight
+    },
+
+    onDelete () {
+      this.deleteComment()
+      this.text = ''
+      this.isEditMode = false
+      this.editComment = null
     },
 
     onEdit(comment) {
@@ -173,9 +182,6 @@ export default {
 
     closeModal() {
       this.isOpen = !this.isOpen
-
-      // Reset text
-      this.text = ""
     },
   },
 
@@ -185,9 +191,10 @@ export default {
         this.loadComments()
       } else {
         this.set({ state: "comments", data: [] })
+        this.set({ state: "deleteCommentId", data: null })
         this.isEditMode = false
-        this.isDeleteMode = false
-        // ovo proveri ima bug
+        this.editComment = null
+        this.text = ''
       }
     },
 

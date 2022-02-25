@@ -5,7 +5,7 @@
   
       <div>
         <button class="btn delete__btn" @click="closeDeleteMode">Cancel</button>
-        <button class="btn delete__btn" @click="deleteComment">Delete</button>
+        <button class="btn delete__btn" @click="onDelete">Delete</button>
       </div>
     </div>
   </div>
@@ -18,6 +18,10 @@ export default {
 
   methods: {
     ...mapActions(['deleteComment', 'set']),
+
+    onDelete () {
+      this.$emit('onDelete')
+    },
 
     closeDeleteMode () {
       this.set({ state: 'deleteCommentId', data: null })
