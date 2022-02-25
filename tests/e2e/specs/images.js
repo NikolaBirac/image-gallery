@@ -42,20 +42,23 @@ describe('Home Page', () => {
     })
   })
 
-  it.only('Leave comment on image', () => {
+  it.only('Edit comment on image', () => {
       cy.get('.list__item .btn').eq(0).click()
       cy.get('.loader').should('be.visible')
       cy.get('.image-details img').should('be.visible')
       cy.get('.comments__floating').click()
-      cy.get('.loader').should('be.visible')
 
+      cy.get('.comments__textarea').type(commentText + '{enter}')
       cy.get('.comments__container')
         .contains(commentText)
+        .last()
         .parent()
         .invoke('show')
         .should('have.class', 'comment__text--yellow')
 
     // cy.get('.comment__text').contains(commentText).invoke('show')
     cy.get('.comment__edit').find('button').first().click({force: true})
+    cy.get('.comments__textarea').type(' edited{enter}')
+    cy.get('.comments__container').contains(commentText + ' edited')
   })
 })
