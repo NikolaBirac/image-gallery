@@ -12,12 +12,12 @@
 
       <div v-if="isUserComment" class="comment__edit">
         <button class="btn btn__circle" @click="onEdit">
-          <img src="../assets/ellipse-yellow-small.svg">
-          <img src="../assets/edit.svg">
+          <img src="../../assets/ellipse-yellow-small.svg">
+          <img src="../../assets/edit.svg">
         </button>
         <button class="btn btn__circle" @click="onDelete">
-          <img src="../assets/ellipse-yellow-small.svg">
-          <img src="../assets/delete.svg">
+          <img src="../../assets/ellipse-yellow-small.svg">
+          <img src="../../assets/delete.svg">
         </button>
       </div>
     </div>
@@ -73,7 +73,7 @@ export default {
   }
 
   &--right {
-    justify-content: end;
+    justify-content: flex-end;
   }
 
   &__avatar {

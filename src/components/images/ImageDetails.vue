@@ -14,7 +14,7 @@
     </div>
 
     <teleport to="body">
-      <comments-popup v-if="isImageLoaded" />
+      <comments-modal v-if="isImageLoaded" />
     </teleport>
 
     <loading v-if="isLoading" />
@@ -23,14 +23,14 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import CommentsPopup from "./CommentsPopup";
-import Loading from "./common/TheLoading";
-import Error from "./common/TheError";
+import CommentsModal from "../comments/CommentsModal";
+import Loading from "../shared/TheLoading";
+import Error from "../shared/TheError";
 
 export default {
   name: "ImageDetails",
 
-  components: { CommentsPopup, Loading, Error },
+  components: { CommentsModal, Loading, Error },
 
   data() {
     return {

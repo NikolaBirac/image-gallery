@@ -17,7 +17,7 @@
         placeholder="Search showcase..."
         class="list__search-input"
       />
-      <img src="../assets/loop.svg" class="list__search-icon" />
+      <img src="../../assets/loop.svg" class="list__search-icon" />
     </div>
 
     <!-- Error message -->
@@ -38,7 +38,7 @@
           @click="loadImage(img.id)"
         >
           <span>Review</span>
-          <img src="../assets/arrow-right.svg" alt="arrow" />
+          <img src="../../assets/arrow-right.svg" alt="arrow" />
         </button>
       </div>
     </div>
@@ -49,8 +49,9 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import Loading from "./common/TheLoading";
-import Error from "./common/TheError";
+import Loading from "../shared/TheLoading";
+import Error from "../shared/TheError";
+import setImageGalleryHeight from '../../shared/setImageGalleryHeight'
 
 export default {
   name: "ImagesList",
@@ -70,8 +71,8 @@ export default {
 
     filteredImages() {
       return this.images.filter(({ title }) => {
-        return title.toLowerCase().includes(this.search.toLowerCase());
-      });
+        return title.toLowerCase().includes(this.search.toLowerCase())
+      })
     },
   },
 
@@ -80,29 +81,32 @@ export default {
 
     loadImage(id) {
       if (this.selectedId !== id) {
-        this.set({ state: "selectedId", data: id });
-        this.set({ state: "comments", data: [] });
+        this.set({ state: "selectedId", data: id })
+        this.set({ state: "comments", data: [] })
       }
     },
 
     async loadImages() {
-      this.isError = false;
-      this.isLoading = true;
+      this.isError = false
+      this.isLoading = true
 
       try {
-        await this.getImages("images");
+        await this.getImages("images")
       } catch (err) {
-        this.isError = true;
+        this.isError = true
       } finally {
-        this.isLoading = false;
+        this.isLoading = false
       }
     },
   },
 
   created() {
-    this.loadImages();
+    this.loadImages()
+
+    setImageGalleryHeight()
+
   },
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -127,7 +131,7 @@ export default {
 
   &__upload-btn {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     margin-bottom: 20px;
   }
 

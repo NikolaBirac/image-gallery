@@ -1,18 +1,36 @@
 <template>
   <div class="upload">
-    <form @submit.prevent="handle" class="upload__form">
+    <form @submit.prevent="upload" class="upload__form">
       <h1>Upload Image</h1>
-      <input v-model.trim="title" type="text" placeholder="Title" class="upload__input">
-      <input v-model.trim="description" type="text" placeholder="Description" class="upload__input">
-      <input type="file" accept="image/*" class="upload__choose-file" @change="setFile">
-      <button class="btn btn__square">Upload</button>
+
+      <input
+        v-model.trim="title"
+        type="text"
+        placeholder="Title"
+        class="upload__input">
+      <!-- <input v-model.trim="description" type="text" placeholder="Description" class="upload__input"> -->
+      <input
+        type="file"
+        accept="image/*"
+        class="upload__choose-file"
+        @change="setFile">
+
+      <p v-if="true" class="error">Something went wrong!</p>
+
+      <button
+        class="btn btn__square"
+        :class="{ 'btn__disabled' : isDisabled || isLoading }"
+        :disabled="isDisabled"
+      >
+        {{ isLoading ? 'Uploading...' : 'Upload'}}
+      </button>
     </form>
   </div>
 </template>
 
 <script>
 import { mapActions } from 'vuex'
-// import { timestamp } from '../firebase/config'
+import { timestamp } from '../firebase/config'
 
 export default {
   name: 'UploadView',
@@ -21,30 +39,50 @@ export default {
     return {
       title: '',
       description: '',
-      file: null
+      file: null,
+      isError: false,
+      isLoading: false
+    }
+  },
+
+  computed: {
+    isDisabled () {
+      return !this.title || !this.file
     }
   },
 
   methods: {
     ...mapActions(['uploadImage', 'addDoc']),
 
-    async handle () {
-      const url = await this.uploadImage(this.file)
+    async upload () {
+      this.isLoading = true
+      this.isError = false
 
-      await this.addDoc( {
-        state: 'images',
-        data: {
-          title: this.title,
-          description: this.description,
-          userId: 1,
-          userName: 'Nikola',
-          coverUrl: url,
-          createdAt: new Date()
-        }
-      })
+      try {
+        const url = await this.uploadImage(this.file)
+  
+        await this.addDoc({
+          state: 'images',
+          data: {
+            title: this.title,
+            description: this.description,
+            userId: 1,
+            userName: 'Nikola',
+            coverUrl: url,
+            createdAt: timestamp()
+          }
+        })
+        // Redirect to Home page
+        this.$router.push({ name: 'home' })
+      } catch (err) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
     },
 
     setFile (e) {
+      this.isError = false
       const selected = e.target.files[0]
 
       // Allowed file types
@@ -85,7 +123,7 @@ export default {
   }
 
   &__choose-file {
-    margin: 10px 0 20px;
+    margin-top: 10px;
   }
 }
 

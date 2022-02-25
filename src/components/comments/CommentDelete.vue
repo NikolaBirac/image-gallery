@@ -14,7 +14,7 @@
 <script>
 import { mapActions } from 'vuex'
 export default {
-  name: 'DeleteComment',
+  name: 'CommentDelete',
 
   methods: {
     ...mapActions(['deleteComment', 'set']),

@@ -6,7 +6,7 @@ export async function getImages ({ commit }) {
   const data = res.docs.map( doc => {
     return { ...doc.data(), id: doc.id }
   })
-  const sortData = data.sort( (a, b) =>  a.createdAt.seconds - b.createdAt.seconds)
+  const sortData = data.sort( (a, b) =>  b.createdAt.seconds - a.createdAt.seconds)
 
   commit('SET', { state: 'images', data: sortData })
 }

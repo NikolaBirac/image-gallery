@@ -3,7 +3,7 @@
     <div v-if="isOpen" class="comments__popup">
       <div class="comments__header">
         <img
-          src="../assets/arrow-left.svg"
+          src="../../assets/arrow-left.svg"
           @click="closeModal"
           style="cursor: pointer"
         />
@@ -44,24 +44,24 @@
         />
         <div class="comments__textarea--hidden" ref="hiddenElement"></div>
         <button class="btn comments__textarea-icon" @click="sendComment">
-          <img src="../assets/send.svg" />
+          <img src="../../assets/send.svg" />
         </button>
       </div>
       <!-- Delete comment -->
-      <delete-comment
+      <comment-delete
         v-if="deleteCommentId"
       />
     </div>
 
     <button class="btn btn__circle comments__floating" @click="closeModal">
-      <img src="../assets/ellipse-yellow.svg" />
+      <img src="../../assets/ellipse-yellow.svg" />
       <img
         v-if="isOpen"
-        src="../assets/close.svg"
+        src="../../assets/close.svg"
         class="comments__floating-icon"
       />
-      <img v-else src="../assets/comment.svg" class="comments__floating-icon" />
-      <!-- <img else src="../assets/comment-part.svg" class="comments__floating--close"> -->
+      <img v-else src="../../assets/comment.svg" class="comments__floating-icon" />
+      <!-- <img else src="../../assets/comment-part.svg" class="comments__floating--close"> -->
     </button>
   </div>
 </template>
@@ -69,15 +69,15 @@
 <script>
 import { mapActions, mapGetters } from "vuex";
 import CommentItem from "./CommentItem";
-import DeleteComment from "./DeleteComment";
-import Error from "./common/TheError";
-import Loading from "./common/TheLoading";
-import { timestamp } from "../firebase/config";
+import CommentDelete from "./CommentDelete";
+import Error from "../shared/TheError";
+import Loading from "../shared/TheLoading";
+import { timestamp } from "../../firebase/config";
 
 export default {
-  name: "CommentsPopup",
+  name: "CommentsModal",
 
-  components: { CommentItem, DeleteComment, Error, Loading },
+  components: { CommentItem, CommentDelete, Error, Loading },
 
   data() {
     return {
@@ -185,6 +185,9 @@ export default {
         this.loadComments()
       } else {
         this.set({ state: "comments", data: [] })
+        this.isEditMode = false
+        this.isDeleteMode = false
+        // ovo proveri ima bug
       }
     },
 

@@ -14,11 +14,11 @@
           <input type="password" id="password" class="login__input">
         </div>
 
-        <div class="login__error">
+        <div class="error">
           Wrong email/password
         </div>
 
-        <button class="btn btn__square login__btn">Login</button>
+        <button class="btn btn__square">Login</button>
       </form>
     </div>
   </div>
@@ -51,7 +51,7 @@ export default {
   
   &__form {
     display: flex;
-    justify-content: end;
+    justify-content: flex-end;
     align-items: center;
     min-height: calc(100vh - 170px);
     padding: 50px 20px;
@@ -72,19 +72,6 @@ export default {
     &-label {
       font-size: 18px;
     }
-  }
-
-  &__btn {
-    margin-top: 20px;
-  }
-
-  &__error {
-    background: rgb(255, 234, 234);
-    padding: 10px;
-    margin-top: 10px;
-    color: red;
-    border: 1px solid red;
-    word-wrap: break-word;
   }
 }
 </style>

@@ -42,7 +42,18 @@ a {
   color: inherit;
 }
 
-img{
+img {
   vertical-align: middle;
+}
+
+.error {
+  display: inline-block;
+  background: rgb(255, 234, 234);
+  padding: 10px;
+  margin: 20px 0;
+  color: rgba(255, 0, 0, 0.8);
+  border: 1px solid rgba(255, 0, 0, 0.8);
+  word-wrap: break-word;
+  font-size: 16px;
 }
 </style>
