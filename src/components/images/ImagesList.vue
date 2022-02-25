@@ -1,5 +1,8 @@
 <template>
   <div class="list">
+    <button id="menu-close" class="btn" @click="closeMenu">
+      <img src="../../assets/arrow-back.svg">
+    </button>
     <h1 class="list__title">Image Gallery</h1>
 
     <!-- Upload Button -->
@@ -23,7 +26,7 @@
     <!-- Error message -->
     <error v-if="isError" @refresh="loadImages" />
     <!-- No data -->
-    <div v-else-if="!isLoading && !filteredImages.length">No data</div>
+    <div v-else-if="!isLoading && !filteredImages.length">No images</div>
     <!-- Image list -->
     <div v-else>
       <div v-for="img of filteredImages" :key="img.id" class="list__item">
@@ -51,7 +54,7 @@
 import { mapActions, mapGetters } from "vuex";
 import Loading from "../shared/TheLoading";
 import Error from "../shared/TheError";
-import setImageGalleryHeight from '../../shared/setImageGalleryHeight'
+import setImageGalleryHeight from "../../shared/setImageGalleryHeight";
 
 export default {
   name: "ImagesList",
@@ -60,14 +63,15 @@ export default {
 
   data() {
     return {
-      isLoading: true,
+      isLoading: false,
       isError: false,
       search: "",
-    };
+      images: [],
+    }
   },
 
   computed: {
-    ...mapGetters(["images", "selectedId"]),
+    ...mapGetters(["selectedId"]),
 
     filteredImages() {
       return this.images.filter(({ title }) => {
@@ -79,11 +83,23 @@ export default {
   methods: {
     ...mapActions(["getImages", "set"]),
 
+    closeMenu () {
+      const gallery = document.getElementsByClassName('list')[0]
+      gallery.classList.remove('active-menu')
+    },
+
     loadImage(id) {
       if (this.selectedId !== id) {
         this.set({ state: "selectedId", data: id })
         this.set({ state: "comments", data: [] })
+
+        this.hideGallery()
       }
+    },
+
+    hideGallery () {
+      const gallery = document.getElementsByClassName('list')[0]
+      gallery.classList.remove('active-menu')
     },
 
     async loadImages() {
@@ -91,7 +107,7 @@ export default {
       this.isLoading = true
 
       try {
-        await this.getImages("images")
+        this.images = await this.getImages("images")
       } catch (err) {
         this.isError = true
       } finally {
@@ -100,11 +116,12 @@ export default {
     },
   },
 
+  mounted() {
+    setImageGalleryHeight()
+  },
+
   created() {
     this.loadImages()
-
-    setImageGalleryHeight()
-
   },
 }
 </script>
@@ -112,13 +129,22 @@ export default {
 <style lang="scss" scoped>
 .list {
   overflow: scroll;
-  // max-height: 1000px;
-  // height: 100%;
   flex: 0 465px;
   max-width: 465px;
   flex-shrink: 0;
   padding: 0 50px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+  transition: 0.3s all ease;
+
+  #menu-close{
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: none;
+    @media screen and (max-width: 991px) {
+      display: block;
+    }
+  }
 
   &::-webkit-scrollbar {
     width: 0; /* Remove scrollbar space */
@@ -170,6 +196,7 @@ export default {
       justify-content: center;
       font-weight: 700;
       font-size: 18px;
+      padding: 0 10px;
     }
   }
 
@@ -186,6 +213,26 @@ export default {
     width: 130px;
     height: 75px;
     object-fit: cover;
+  }
+  @media screen and (max-width: 991px) {
+    flex: 0 100%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -100%;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    background: #fff;
+    z-index: 100;
+    &.active-menu {
+      left: 0;
+      opacity: 1;
+      visibility: visible;
+      pointer-events: initial;
+      max-height: 100vh;
+      width: 100%;
+    }
   }
 }
 </style>

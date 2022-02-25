@@ -1,6 +1,6 @@
-export function images (state) {
-  return state.images
-}
+// export function images (state) {
+//   return state.images
+// }
 
 export function selectedId (state) {
   return state.selectedId

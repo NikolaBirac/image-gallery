@@ -1,33 +1,33 @@
-import { db, projectStorage } from '../firebase/config'
+import { db, projectStorage, projectAuth } from '../firebase/config'
 
-export async function getImages ({ commit }) {
+export async function login (_, { email, password }) {
+  await projectAuth.signInWithEmailAndPassword(email, password)
+}
+
+export async function logout () {
+  await projectAuth.signOut()
+}
+
+export async function getImages () {
   const res = await db.collection('images').get()
   
   const data = res.docs.map( doc => {
     return { ...doc.data(), id: doc.id }
   })
-  const sortData = data.sort( (a, b) =>  b.createdAt.seconds - a.createdAt.seconds)
-
-  commit('SET', { state: 'images', data: sortData })
+  return data.sort((a, b) =>  b.createdAt.seconds - a.createdAt.seconds)
 }
 
 export async function getComments ({ state, commit }) {
-  try {
-    const res = await db.collection('comments')
-      .where('imageId', '==', state.selectedId)
-      .get()
-      // sortiraj createat
-    
-    const data = res.docs.map( doc => {
-      return { ...doc.data(), id: doc.id }
-    })
-    const sortData = data.sort( (a, b) =>  a.createdAt.seconds - b.createdAt.seconds)
+  const res = await db.collection('comments')
+    .where('imageId', '==', state.selectedId)
+    .get()
   
-    commit('SET', { state: 'comments', data: sortData })
-    
-  } catch (error) {
-    console.log(error)
-  }
+  const data = res.docs.map( doc => {
+    return { ...doc.data(), id: doc.id }
+  })
+  const sortData = data.sort((a, b) =>  a.createdAt.seconds - b.createdAt.seconds)
+  
+  commit('SET', { state: 'comments', data: sortData })
 }
 
 export async function updateComment ({ commit }, payload) {
@@ -67,12 +67,11 @@ export async function addComment ( { commit }, payload) {
   commit('PUSH_ARRAY', payload)
 }
 
-export async function uploadImage ( _, payload ) {
-  const filePath = `/images/1/${payload.name}`
-
+export async function uploadImage ( _, { file, userId } ) {
+  const filePath = `/images/${userId}/${file.name}`
   const storage = projectStorage.ref(filePath)
 
-  const res = await storage.put(payload)
+  const res = await storage.put(file)
   const url = await res.ref.getDownloadURL()
 
   return url

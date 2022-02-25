@@ -9,8 +9,29 @@
 // ***********************************************
 //
 //
+import firebase from "firebase/app";
+import 'firebase/auth'
+import 'firebase/database'
+import 'firebase/firestore'
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDa6RQibKeQ6rAxgxEaSofOCVfP9-NmoIc",
+  authDomain: "gallery-8ea08.firebaseapp.com",
+  projectId: "gallery-8ea08",
+  storageBucket: "gallery-8ea08.appspot.com",
+  messagingSenderId: "105668786956",
+  appId: "1:105668786956:web:65d7d9486ddbc04b6ee729"
+};
+
+// init firebase
+firebase.initializeApp(firebaseConfig)
+
 // -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
+Cypress.Commands.add("login", () => {
+  cy.fixture('user').then(({ email, password }) => {
+    return firebase.default.auth().signInWithEmailAndPassword(email, password)
+  })
+})
 //
 //
 // -- This is a child command --

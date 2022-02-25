@@ -8,17 +8,17 @@
         type="text"
         placeholder="Title"
         class="upload__input">
-      <!-- <input v-model.trim="description" type="text" placeholder="Description" class="upload__input"> -->
+      <input v-model.trim="description" type="text" placeholder="Description" class="upload__input">
       <input
         type="file"
         accept="image/*"
         class="upload__choose-file"
         @change="setFile">
 
-      <p v-if="true" class="error">Something went wrong!</p>
+      <p v-if="isError" class="error">Something went wrong!</p>
 
       <button
-        class="btn btn__square"
+        class="btn btn__square upload__btn"
         :class="{ 'btn__disabled' : isDisabled || isLoading }"
         :disabled="isDisabled"
       >
@@ -30,7 +30,7 @@
 
 <script>
 import { mapActions } from 'vuex'
-import { timestamp } from '../firebase/config'
+import { projectAuth, timestamp } from '../firebase/config'
 
 export default {
   name: 'UploadView',
@@ -57,17 +57,17 @@ export default {
     async upload () {
       this.isLoading = true
       this.isError = false
-
       try {
-        const url = await this.uploadImage(this.file)
+        const user = projectAuth.currentUser
+        const url = await this.uploadImage({ file: this.file, userId: user.uid })
   
         await this.addDoc({
           state: 'images',
           data: {
             title: this.title,
             description: this.description,
-            userId: 1,
-            userName: 'Nikola',
+            userId: user.uid,
+            userName: user.email,
             coverUrl: url,
             createdAt: timestamp()
           }
@@ -107,10 +107,16 @@ export default {
   align-items: center;
 
   &__form {
-    width: 500px;
+    width: 100%;
+    max-width: 500px;
     padding: 30px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
     border-radius: 5px;
+    @media screen and (max-width: 575px) {
+      width: 90%;
+      margin: 0 5%;
+      
+    }
   }
 
   &__input {
@@ -124,6 +130,11 @@ export default {
 
   &__choose-file {
     margin-top: 10px;
+    width: 100%;
+  }
+
+  &__btn {
+    margin-top: 20px;
   }
 }
 

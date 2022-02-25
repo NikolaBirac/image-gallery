@@ -1,6 +1,6 @@
 export default function () {
   return {
-    images: [],
+    // images: [],
 
     selectedId: null,
     selectedImage: {},

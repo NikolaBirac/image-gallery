@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { projectAuth } from '@/firebase/config'
 import { mapActions } from 'vuex'
 
 export default {
@@ -37,22 +38,18 @@ export default {
     }
   },
 
-  data () {
-    return {
-      userId: 1
+  computed: {
+    isUserComment () {
+      const id = projectAuth.currentUser.uid
+      return this.comment.userId === id
     }
   },
 
   methods: {
     ...mapActions(['set']),
 
-    isUserComment () {
-      return this.comment.userId === this.userId
-    },
-
     onDelete () {
       this.set({ state: 'deleteCommentId', data: this.comment.id })
-      // this.$emit("onDelete", this.comment)
     },
 
     onEdit () {

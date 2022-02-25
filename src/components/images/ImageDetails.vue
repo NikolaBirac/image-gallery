@@ -3,16 +3,18 @@
     <!-- Error message -->
     <error v-if="isError" @refresh="loadImage" />
 
-    <div v-if="isImageLoaded">
-      <div class="image-details__img">
-        <img :src="selectedImage.coverUrl" :alt="selectedImage.title" />
-      </div>
-      <p>{{ selectedImage.description }}</p>
+    <div v-if="isImageLoaded" class="image-details-inner">
+      <img
+        :src="selectedImage.coverUrl"
+        :alt="selectedImage.title"
+        @click="changeText"
+      />
+      <p class="image-main-comment">{{ text }}</p>
     </div>
+
     <div v-if="!selectedId" class="image-details__empty">
       <i>No image selected</i>
     </div>
-
     <teleport to="body">
       <comments-modal v-if="isImageLoaded" />
     </teleport>
@@ -36,6 +38,7 @@ export default {
     return {
       isLoading: false,
       isError: false,
+      text: "",
     };
   },
 
@@ -50,6 +53,11 @@ export default {
   methods: {
     ...mapActions(["getImage", "set"]),
 
+    changeText() {
+      this.text =
+        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Esse aliquid non sint praesentium neque assumenda, beatae saepe quasi cum eos nam ex quis provident pariatur facere vero iusto? Ut, dignissimos?  hskdafkljsad kf huskadhfu hsadufh uisa dfhasduk fhkasdh fklhsadlfh  fsda fsda fsad fsda fas sad fsadf sadfsladuflhsadlfh aslkf hask";
+    },
+
     async loadImage() {
       this.isError = false;
       this.isLoading = true;
@@ -59,6 +67,7 @@ export default {
 
       try {
         await this.getImage();
+        this.text = this.selectedImage.description;
       } catch (err) {
         this.isError = true;
       } finally {
@@ -67,10 +76,28 @@ export default {
     },
   },
 
+  updated() {
+    const container = document.getElementsByClassName("image-details")[0];
+
+    if (container) {
+      let para = container.getElementsByClassName("image-main-comment")[0];
+      if (para) {
+        let contHeight = container.clientHeight;
+        let paraHeight = para.clientHeight;
+        let viewImg = container.getElementsByTagName("img")[0];
+        let pt = window
+          .getComputedStyle(container, null)
+          .getPropertyValue("padding-top");
+        let padding = +pt.replace("px", "") * 2;
+        viewImg.style.maxHeight = contHeight - padding - paraHeight + "px";
+      }
+    }
+  },
+
   watch: {
     async selectedId(n, o) {
       if (n !== o) {
-        this.loadImage();
+        await this.loadImage();
       }
     },
   },
@@ -79,34 +106,47 @@ export default {
 
 <style lang="scss" scoped>
 .image-details {
-  // flex-grow: 1;
   margin: 0 auto;
   padding: 90px 0;
+  flex: 0 100%;
 
-  &__img {
-   display: flex;
-   justify-content: center;
-    img{
-      max-height: 60vh;
+  &-inner {
+    img {
+      width: auto;
+      vertical-align: middle;
       height: auto;
+      max-width: 80%;
+      max-height: 50vh;
+      margin: 0 auto;
+      display: block;
+      transition: 0.3s all ease;
+    }
+
+    p {
+      margin: 0 auto;
+      max-width: 80%;
+      padding-top: 50px;
+      font-size: 36px;
+      font-weight: 900;
+      text-align: center;
+      @media screen and (max-width: 991px) {
+        padding-top: 30px;
+        font-size: 24px;
+      }
+      @media screen and (max-width: 575px) {
+        padding-top: 30px;
+        font-size: 20px;
+      }
     }
   }
-
   &__empty {
+    text-align: center;
     font-size: 20px;
     color: grey;
   }
 
-  // img {
-  //   width: 100%;
-  //   height: auto;
-  // }
-
-  p {
-    margin-top: 50px;
-    font-size: 36px;
-    font-weight: 900;
-    text-align: center;
+  @media screen and (max-width: 991px) {
+    min-height: calc(100vh - 84px);
   }
 }
 </style>

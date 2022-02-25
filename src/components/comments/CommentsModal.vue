@@ -62,7 +62,6 @@
         class="comments__floating-icon"
       />
       <img v-else src="../../assets/comment.svg" class="comments__floating-icon" />
-      <!-- <img else src="../../assets/comment-part.svg" class="comments__floating--close"> -->
     </button>
   </div>
 </template>
@@ -73,7 +72,7 @@ import CommentItem from "./CommentItem";
 import CommentDelete from "./CommentDelete";
 import Error from "../shared/TheError";
 import Loading from "../shared/TheLoading";
-import { timestamp } from "../../firebase/config";
+import { projectAuth, timestamp } from "../../firebase/config";
 
 export default {
   name: "CommentsModal",
@@ -88,8 +87,8 @@ export default {
       isLoading: false,
       isEditMode: false,
       editComment: null,
-      text: "",
-    };
+      text: ''
+    }
   },
 
   computed: {
@@ -125,10 +124,11 @@ export default {
             this.isError = true
           }
         } else {
+          const user = projectAuth.currentUser
           const comment = {
             text: this.text,
-            userId: 1,
-            userName: "Nikola",
+            userId: user.uid,
+            userEmail: user.email,
             createdAt: timestamp(),
             imageId: this.selectedId,
           }
@@ -229,6 +229,15 @@ export default {
     overflow: hidden;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.25);
     position: relative;
+
+    @media screen and (max-width: 575px) {
+      width: initial;
+      position: fixed;
+      top: 84px;
+      left: 0;
+      right: 0;
+      bottom: 120px;
+    }
   }
 
   &__header {
@@ -253,6 +262,10 @@ export default {
       width: 0; /* Remove scrollbar space */
       background: transparent; /* Make scrollbar invisible */
     }
+
+    @media screen and (max-width: 575px) {
+      max-height: calc(100% - 120px);
+    }
   }
 
   &__content {
@@ -272,6 +285,13 @@ export default {
   &__create {
     border-top: 1px solid #abafae;
     position: relative;
+
+    @media screen and (max-width: 575px) {
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+    }
   }
 
   &__textarea {
@@ -306,6 +326,10 @@ export default {
       width: 375px;
       padding: 17px 70px 12px 30px;
       word-wrap: break-word;
+    }
+
+    @media screen and (max-width: 575px) {
+    display: block
     }
   }
 }
