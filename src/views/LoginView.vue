@@ -59,6 +59,7 @@ export default {
     ...mapActions(['login']),
 
     async onSubmit () {
+      console.log(1)
       this.isLoading = true
       this.errorMsg = ''
 
